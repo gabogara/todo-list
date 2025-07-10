@@ -1,12 +1,73 @@
-# React + Vite
+# # Todo List App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple and responsive Todo List web application built with **React + Vite**, styled with basic CSS, and configured with **ESLint** and **Prettier** for code quality and formatting.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Add, complete, and delete todos
+- Clean and organized project structure
+- Built with React using Vite for fast development
+- Linting with ESLint + React rules
+- Code formatting with Prettier
+- Fully responsive design
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## Tech Stack
+
+- **Frontend:** React + Vite
+- **Linting:** ESLint (`eslint-plugin-react`, `react-hooks`, `react-refresh`)
+- **Formatting:** Prettier
+- **Package Manager:** npm
+
+---
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/todo-list.git
+   cd todo-list
+
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npn install
+
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## This will start the Vite development server. Open your browser and go to:
+
+```bash
+   npm run dev
+```
+
+This will start the Vite development server. Open your browser and go to:
+
+```web
+   http://localhost:5173
+```
+
+---
+
+## License
+
+This project is part of my journey at Code the Dream, where I'm learning React and modern front-end development.
+
+---
+
+## Contact
+
+For any questions, issues, or feedback, please reach out via **GitHub** or open an issue in the repository.
