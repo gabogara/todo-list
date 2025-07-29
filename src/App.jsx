@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import TodoForm from './TodoForm';
-import TodoList from './todoList';
+import TodoList from './TodoList';
 
 function App() {
   const [newTodo, setNewTodo] = useState('Hello world');
