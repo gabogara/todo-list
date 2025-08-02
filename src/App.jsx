@@ -4,6 +4,7 @@ import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 
 function App() {
+  const [todoList, setTodoList] = useState([]);
   const addTodo = (title) => {
     const newTodo = {
       title,
@@ -11,7 +12,7 @@ function App() {
     };
     setTodoList([...todoList, newTodo]);
   };
-  const [todoList, setTodoList] = useState([]);
+
   return (
     <div>
       <h1>Todo List</h1>
