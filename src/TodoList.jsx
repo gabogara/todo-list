@@ -1,7 +1,5 @@
 import TodoListItem from './TodoListItem';
 
-TodoListItem;
-
 function TodoList() {
   const todos = [
     { id: 1, title: 'review resources' },
