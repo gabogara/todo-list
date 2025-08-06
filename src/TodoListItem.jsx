@@ -1,4 +1,4 @@
-export const TodoListItem = ({ todo }) => {
+const TodoListItem = ({ todo }) => {
   return <li>{todo.title}</li>;
 };
 
