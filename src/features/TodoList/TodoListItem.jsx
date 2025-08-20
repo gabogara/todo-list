@@ -1,52 +1,61 @@
 import { useState, useRef } from 'react';
+import TextInputWithLabel from '../shared/TextInputWithLabel';
 
 const TodoListItem = ({ todo, onCompleteTodo, onUpdateTodo }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(todo.title);
+  const [workingTitle, setWorkingTitle] = useState(todo.title);
   const inputRef = useRef(null);
 
-  const handleDoubleClick = () => {
-    setIsEditing(true);
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-
-  const handleBlur = () => {
-    if (editedTitle.trim() !== '') {
-      onUpdateTodo(todo.id, editedTitle);
-    } else {
-      setEditedTitle(todo.title); // revert if empty
-    }
+  const handleCancel = () => {
+    setWorkingTitle(todo.title); // restaurar valor original
     setIsEditing(false);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      inputRef.current.blur(); // trigger blur
-    } else if (e.key === 'Escape') {
-      setEditedTitle(todo.title);
-      setIsEditing(false);
-    }
+  const handleEdit = (event) => {
+    setWorkingTitle(event.target.value);
+  };
+
+  const handleUpdate = (event) => {
+    event.preventDefault();
+    if (!isEditing) return;
+
+    onUpdateTodo(todo.id, workingTitle);
+    setIsEditing(false);
   };
 
   return (
     <li>
-      <input
-        type="checkbox"
-        checked={todo.isCompleted}
-        onChange={() => onCompleteTodo(todo.id)}
-      />
-      {isEditing ? (
-        <input
-          ref={inputRef}
-          type="text"
-          value={editedTitle}
-          onChange={(e) => setEditedTitle(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-        />
-      ) : (
-        <span onDoubleClick={handleDoubleClick}>{todo.title}</span>
-      )}
+      <form onSubmit={handleUpdate}>
+        {isEditing ? (
+          <>
+            <TextInputWithLabel
+              elementId={`todo-${todo.id}`}
+              label="Edit Todo"
+              value={workingTitle}
+              onChange={handleEdit}
+              ref={inputRef}
+            />
+            <button type="button" onClick={handleCancel}>
+              Cancel
+            </button>
+            <button type="button" onClick={handleUpdate}>
+              Update
+            </button>
+          </>
+        ) : (
+          <>
+            <label>
+              <input
+                type="checkbox"
+                id={`checkbox-${todo.id}`}
+                checked={todo.isCompleted}
+                onChange={() => onCompleteTodo(todo.id)}
+              />
+            </label>
+            <span onClick={() => setIsEditing(true)}>{todo.title}</span>
+          </>
+        )}
+      </form>
     </li>
   );
 };
