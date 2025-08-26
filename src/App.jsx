@@ -93,11 +93,51 @@ function App() {
     setTodoList(updatedTodos);
   };
 
-  const updateTodo = (id, newTitle) => {
-    const updatedTodos = todoList.map((todo) =>
-      todo.id === id ? { ...todo, title: newTitle } : todo
+  const updateTodo = async (id, newTitle) => {
+    const editedTodo = todoList.find((t) => t.id === id);
+    if (!editedTodo) return;
+
+    const originalTodo = { ...editedTodo };
+
+    const optimisticallyUpdated = todoList.map((t) =>
+      t.id === id ? { ...t, title: newTitle } : t
     );
-    setTodoList(updatedTodos);
+    setTodoList(optimisticallyUpdated);
+
+    const payload = {
+      records: [
+        {
+          id,
+          fields: {
+            title: newTitle,
+            isCompleted: editedTodo.isCompleted,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const resp = await fetch(url, options);
+      if (!resp.ok)
+        throw new Error(`NetworkError when attempting to fetch resource.`);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(`${error.message}`);
+
+      const revertedTodos = todoList.map((t) =>
+        t.id === id ? originalTodo : t
+      );
+      setTodoList(revertedTodos);
+    }
   };
 
   return (
