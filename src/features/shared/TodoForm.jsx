@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import TextInputWithLabel from './TextInputWithLabel';
 
-const TodoForm = ({ onAddTodo }) => {
+const TodoForm = ({ onAddTodo, isSaving }) => {
   const [title, setTitle] = useState('');
   const todoTitleInput = useRef(null);
 
