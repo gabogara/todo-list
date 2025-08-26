@@ -72,7 +72,18 @@ function App() {
         todoList={todoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
+        isloading={isLoading}
       />
+
+      {errorMessage && (
+        <div>
+          <hr />
+          <p>{errorMessage}... Reverting todo...</p>
+          <button onClick={() => setErrorMessage('')}>
+            Dismiss Error Message
+          </button>
+        </div>
+      )}
     </div>
   );
 }
