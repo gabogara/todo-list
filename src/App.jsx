@@ -184,7 +184,7 @@ function App() {
         todoList={todoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
-        isloading={isLoading}
+        isLoading={isLoading}
       />
 
       {errorMessage && (

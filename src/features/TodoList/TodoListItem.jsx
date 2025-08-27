@@ -11,7 +11,7 @@ const TodoListItem = ({ todo, onCompleteTodo, onUpdateTodo }) => {
   }, [todo]);
 
   const handleCancel = () => {
-    setWorkingTitle(todo.title); // restaurar valor original
+    setWorkingTitle(todo.title);
     setIsEditing(false);
   };
 
