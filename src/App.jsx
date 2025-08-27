@@ -83,16 +83,6 @@ function App() {
     }
   };
 
-  const completeTodo = (id) => {
-    const updatedTodos = todoList.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isCompleted: true };
-      }
-      return todo;
-    });
-    setTodoList(updatedTodos);
-  };
-
   const updateTodo = async (id, newTitle) => {
     const editedTodo = todoList.find((t) => t.id === id);
     if (!editedTodo) return;
@@ -133,6 +123,52 @@ function App() {
       console.error(error);
       setErrorMessage(`${error.message}`);
 
+      const revertedTodos = todoList.map((t) =>
+        t.id === id ? originalTodo : t
+      );
+      setTodoList(revertedTodos);
+    }
+  };
+
+  const completeTodo = async (id) => {
+    const target = todoList.find((t) => t.id === id);
+    if (!target) return;
+
+    const originalTodo = { ...target };
+
+    const optimisticallyUpdated = todoList.map((t) =>
+      t.id === id ? { ...t, isCompleted: true } : t
+    );
+    setTodoList(optimisticallyUpdated);
+
+    const payload = {
+      records: [
+        {
+          id,
+          fields: {
+            title: target.title,
+            isCompleted: true,
+          },
+        },
+      ],
+    };
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        Authorization: token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    };
+
+    try {
+      const resp = await fetch(url, options);
+      if (!resp.ok)
+        throw new Error(`NetworkError when attempting to fetch resource.`);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(`${error.message}`);
       const revertedTodos = todoList.map((t) =>
         t.id === id ? originalTodo : t
       );

@@ -28,8 +28,8 @@ const TodoForm = ({ onAddTodo, isSaving }) => {
         ref={todoTitleInput}
         value={title}
       />
-      <button type="submit" disabled={title.trim() === ''}>
-        Add Todo
+      <button type="submit" disabled={title.trim() === '' || isSaving}>
+        {isSaving ? 'Saving...' : 'Add Todo'}
       </button>
     </form>
   );
