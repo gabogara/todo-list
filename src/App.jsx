@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import TodoForm from './features/shared/TodoForm';
 import TodoList from './features/TodoList/TodoList';
+import TodosViewForm from './features/TodosViewForm';
 
 const encodeUrl = ({ url, sortField, sortDirection, queryString }) => {
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
@@ -213,6 +214,14 @@ function App() {
       />
 
       <hr />
+      <TodosViewForm
+        sortField={sortField}
+        setSortField={setSortField}
+        sortDirection={sortDirection}
+        setSortDirection={setSortDirection}
+        queryString={queryString}
+        setQueryString={setQueryString}
+      />
 
       {errorMessage && (
         <div>
