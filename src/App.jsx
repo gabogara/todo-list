@@ -3,11 +3,19 @@ import './App.css';
 import TodoForm from './features/shared/TodoForm';
 import TodoList from './features/TodoList/TodoList';
 
+const encodeUrl = ({ url, sortField, sortDirection }) => {
+  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+  return encodeURI(`${url}?${sortQuery}`);
+};
+
 function App() {
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  const [sortField, setSortField] = useState('createdTime');
+  const [sortDirection, setSortDirection] = useState('desc');
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -20,7 +28,10 @@ function App() {
         headers: { Authorization: token },
       };
       try {
-        const resp = await fetch(url, options);
+        const resp = await fetch(
+          encodeUrl({ url, sortField, sortDirection }),
+          options
+        );
         if (!resp.ok)
           throw new Error(`NetworkError when attempting to fetch resource.`);
         const { records } = await resp.json();
@@ -37,7 +48,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, []);
+  }, [sortField, sortDirection]);
 
   const addTodo = async (title) => {
     const newTodo = { title, isCompleted: false };
@@ -64,7 +75,10 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ url, sortField, sortDirection }),
+        options
+      );
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
       const { records } = await resp.json();
@@ -116,7 +130,10 @@ function App() {
     };
 
     try {
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ url, sortField, sortDirection }),
+        options
+      );
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
     } catch (error) {
@@ -163,7 +180,10 @@ function App() {
     };
 
     try {
-      const resp = await fetch(url, options);
+      const resp = await fetch(
+        encodeUrl({ url, sortField, sortDirection }),
+        options
+      );
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
     } catch (error) {
@@ -187,9 +207,10 @@ function App() {
         isLoading={isLoading}
       />
 
+      <hr />
+
       {errorMessage && (
         <div>
-          <hr />
           <p>{errorMessage}... Reverting todo...</p>
           <button onClick={() => setErrorMessage('')}>
             Dismiss Error Message
