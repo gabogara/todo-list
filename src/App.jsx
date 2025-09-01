@@ -3,9 +3,13 @@ import './App.css';
 import TodoForm from './features/shared/TodoForm';
 import TodoList from './features/TodoList/TodoList';
 
-const encodeUrl = ({ url, sortField, sortDirection }) => {
+const encodeUrl = ({ url, sortField, sortDirection, queryString }) => {
   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  return encodeURI(`${url}?${sortQuery}`);
+  let searchQuery = '';
+  if (queryString) {
+    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  }
+  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
 };
 
 function App() {
@@ -16,6 +20,7 @@ function App() {
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
+  const [queryString, setQueryString] = useState('');
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -29,7 +34,7 @@ function App() {
       };
       try {
         const resp = await fetch(
-          encodeUrl({ url, sortField, sortDirection }),
+          encodeUrl({ url, sortField, sortDirection, queryString }),
           options
         );
         if (!resp.ok)
@@ -48,7 +53,7 @@ function App() {
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection]);
+  }, [sortField, sortDirection, queryString]);
 
   const addTodo = async (title) => {
     const newTodo = { title, isCompleted: false };
@@ -76,7 +81,7 @@ function App() {
     try {
       setIsSaving(true);
       const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection }),
+        encodeUrl({ url, sortField, sortDirection, queryString }),
         options
       );
       if (!resp.ok)
@@ -131,7 +136,7 @@ function App() {
 
     try {
       const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection }),
+        encodeUrl({ url, sortField, sortDirection, queryString }),
         options
       );
       if (!resp.ok)
@@ -181,7 +186,7 @@ function App() {
 
     try {
       const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection }),
+        encodeUrl({ url, sortField, sortDirection, queryString }),
         options
       );
       if (!resp.ok)
