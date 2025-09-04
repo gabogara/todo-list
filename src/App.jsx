@@ -34,10 +34,7 @@ function App() {
         headers: { Authorization: token },
       };
       try {
-        const resp = await fetch(
-          encodeUrl({ url, sortField, sortDirection, queryString }),
-          options
-        );
+        const resp = await fetch(encodeUrl(), options);
         if (!resp.ok)
           throw new Error(`NetworkError when attempting to fetch resource.`);
         const { records } = await resp.json();
@@ -81,10 +78,7 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection, queryString }),
-        options
-      );
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
       const { records } = await resp.json();
@@ -136,10 +130,7 @@ function App() {
     };
 
     try {
-      const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection, queryString }),
-        options
-      );
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
     } catch (error) {
@@ -186,10 +177,7 @@ function App() {
     };
 
     try {
-      const resp = await fetch(
-        encodeUrl({ url, sortField, sortDirection, queryString }),
-        options
-      );
+      const resp = await fetch(encodeUrl(), options);
       if (!resp.ok)
         throw new Error(`NetworkError when attempting to fetch resource.`);
     } catch (error) {
