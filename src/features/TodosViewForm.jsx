@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react';
+import { DEBOUNCE_TIME_MS } from '../constants';
+
 const TodosViewForm = ({
   sortField,
   setSortField,
@@ -7,6 +10,15 @@ const TodosViewForm = ({
   setQueryString,
 }) => {
   const preventRefresh = (e) => e.preventDefault();
+  const [localQueryString, setLocalQueryString] = useState(queryString);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      setQueryString(localQueryString);
+    }, DEBOUNCE_TIME_MS);
+
+    return () => clearTimeout(debounce);
+  }, [localQueryString, setQueryString]);
 
   return (
     <form onSubmit={preventRefresh}>
@@ -15,10 +27,11 @@ const TodosViewForm = ({
         <input
           type="text"
           id="search"
-          value={queryString}
-          onChange={(e) => setQueryString(e.target.value)}
+          value={localQueryString}
+          onChange={(e) => setLocalQueryString(e.target.value)}
         />
-        <button type="button" onClick={() => setQueryString('')}>
+
+        <button type="button" onClick={() => setLocalQueryString('')}>
           Clear
         </button>
       </div>
