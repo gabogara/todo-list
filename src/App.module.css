@@ -1,0 +1,17 @@
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-auto-rows: max-content;
+  justify-content: center;
+  align-content: start;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.errorBox {
+  border: 1px solid var(--error);
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
