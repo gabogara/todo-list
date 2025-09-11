@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { DEBOUNCE_TIME_MS } from '../constants';
 
 const TodosViewForm = ({
   sortField,
@@ -14,7 +15,7 @@ const TodosViewForm = ({
   useEffect(() => {
     const debounce = setTimeout(() => {
       setQueryString(localQueryString);
-    }, 500);
+    }, DEBOUNCE_TIME_MS);
 
     return () => clearTimeout(debounce);
   }, [localQueryString, setQueryString]);
