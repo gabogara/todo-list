@@ -19,12 +19,16 @@ function App() {
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
   const encodeUrl = useCallback(() => {
-    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-    let searchQuery = '';
-    if (queryString) {
-      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    const u = new URL(url);
+    u.searchParams.set('sort[0][field]', sortField);
+    u.searchParams.set('sort[0][direction]', sortDirection);
+
+    if (queryString.trim()) {
+      const safe = queryString.replaceAll('"', '\\"');
+      const formula = `SEARCH("${safe}", {title})`;
+      u.searchParams.set('filterByFormula', formula);
     }
-    return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+    return u.toString();
   }, [url, sortField, sortDirection, queryString]);
 
   useEffect(() => {
@@ -37,7 +41,7 @@ function App() {
       try {
         const resp = await fetch(encodeUrl(), options);
         if (!resp.ok)
-          throw new Error(`NetworkError when attempting to fetch resource.`);
+          throw new Error('NetworkError when attempting to fetch resource.');
         const { records } = await resp.json();
         const mapped = records.map((record) => ({
           id: record.id,
@@ -46,13 +50,13 @@ function App() {
         }));
         setTodoList(mapped);
       } catch (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(error instanceof Error ? error.message : String(error));
       } finally {
         setIsLoading(false);
       }
     };
     fetchTodos();
-  }, [sortField, sortDirection, queryString]);
+  }, [encodeUrl, token]);
 
   const addTodo = async (title) => {
     const newTodo = { title, isCompleted: false };
@@ -79,20 +83,20 @@ function App() {
 
     try {
       setIsSaving(true);
-      const resp = await fetch(encodeUrl(), options);
+      const resp = await fetch(url, options);
       if (!resp.ok)
-        throw new Error(`NetworkError when attempting to fetch resource.`);
+        throw new Error('NetworkError when attempting to fetch resource.');
       const { records } = await resp.json();
 
       const savedTodo = {
         id: records[0].id,
-        ...records[0].fields,
+        title: records[0].fields?.title ?? '',
+        isCompleted: !!records[0].fields?.isCompleted,
       };
-      if (!savedTodo.isCompleted) savedTodo.isCompleted = false;
 
-      setTodoList([...todoList, savedTodo]);
+      setTodoList((prev) => [...prev, savedTodo]);
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error instanceof Error ? error.message : String(error));
     } finally {
       setIsSaving(false);
     }
@@ -104,10 +108,9 @@ function App() {
 
     const originalTodo = { ...editedTodo };
 
-    const optimisticallyUpdated = todoList.map((t) =>
-      t.id === id ? { ...t, title: newTitle } : t
+    setTodoList((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, title: newTitle } : t))
     );
-    setTodoList(optimisticallyUpdated);
 
     const payload = {
       records: [
@@ -131,17 +134,12 @@ function App() {
     };
 
     try {
-      const resp = await fetch(encodeUrl(), options);
+      const resp = await fetch(url, options);
       if (!resp.ok)
-        throw new Error(`NetworkError when attempting to fetch resource.`);
+        throw new Error('NetworkError when attempting to fetch resource.');
     } catch (error) {
-      console.error(error);
-      setErrorMessage(`${error.message}`);
-
-      const revertedTodos = todoList.map((t) =>
-        t.id === id ? originalTodo : t
-      );
-      setTodoList(revertedTodos);
+      setErrorMessage(error instanceof Error ? error.message : String(error));
+      setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
   };
 
@@ -151,10 +149,9 @@ function App() {
 
     const originalTodo = { ...target };
 
-    const optimisticallyUpdated = todoList.map((t) =>
-      t.id === id ? { ...t, isCompleted: true } : t
+    setTodoList((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, isCompleted: true } : t))
     );
-    setTodoList(optimisticallyUpdated);
 
     const payload = {
       records: [
@@ -178,16 +175,12 @@ function App() {
     };
 
     try {
-      const resp = await fetch(encodeUrl(), options);
+      const resp = await fetch(url, options);
       if (!resp.ok)
-        throw new Error(`NetworkError when attempting to fetch resource.`);
+        throw new Error('NetworkError when attempting to fetch resource.');
     } catch (error) {
-      console.error(error);
-      setErrorMessage(`${error.message}`);
-      const revertedTodos = todoList.map((t) =>
-        t.id === id ? originalTodo : t
-      );
-      setTodoList(revertedTodos);
+      setErrorMessage(error instanceof Error ? error.message : String(error));
+      setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
   };
 
