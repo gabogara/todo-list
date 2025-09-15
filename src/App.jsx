@@ -4,6 +4,8 @@ import styles from './App.module.css';
 import TodoForm from './features/shared/TodoForm';
 import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
+import logo from './assets/logo.svg';
+import errorIcon from './assets/error.svg';
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -186,7 +188,10 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <h1>Todo List</h1>
+      <h1 className={styles.title}>
+        <img src={logo} alt="" className={styles.logo} />
+        Todo List
+      </h1>
       <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
       <TodoList
         todoList={todoList}
@@ -207,7 +212,10 @@ function App() {
 
       {errorMessage && (
         <div role="alert" className={styles.errorBox}>
-          <p>{errorMessage}... Reverting todo...</p>
+          <div className={styles.errorRow}>
+            <img src={errorIcon} alt="" className={styles.errorIcon} />
+            <p>{errorMessage}... Reverting todo...</p>
+          </div>
           <button onClick={() => setErrorMessage('')}>
             Dismiss Error Message
           </button>
