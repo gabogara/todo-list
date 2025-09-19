@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import TextInputWithLabel from '../shared/TextInputWithLabel';
+import styles from './TodoListItem.module.css';
 
 const TodoListItem = ({ todo, onCompleteTodo, onUpdateTodo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -10,25 +11,26 @@ const TodoListItem = ({ todo, onCompleteTodo, onUpdateTodo }) => {
     setWorkingTitle(todo.title);
   }, [todo]);
 
+  useEffect(() => {
+    if (isEditing) inputRef.current?.focus();
+  }, [isEditing]);
+
   const handleCancel = () => {
     setWorkingTitle(todo.title);
     setIsEditing(false);
   };
 
-  const handleEdit = (event) => {
-    setWorkingTitle(event.target.value);
-  };
+  const handleEdit = (event) => setWorkingTitle(event.target.value);
 
   const handleUpdate = (event) => {
     event.preventDefault();
     if (!isEditing) return;
-
     onUpdateTodo(todo.id, workingTitle);
     setIsEditing(false);
   };
 
   return (
-    <li>
+    <li className={styles.item}>
       <form onSubmit={handleUpdate}>
         {isEditing ? (
           <>
@@ -37,14 +39,12 @@ const TodoListItem = ({ todo, onCompleteTodo, onUpdateTodo }) => {
               label="Edit Todo"
               value={workingTitle}
               onChange={handleEdit}
-              ref={inputRef}
+              inputRef={inputRef}
             />
             <button type="button" onClick={handleCancel}>
               Cancel
             </button>
-            <button type="button" onClick={handleUpdate}>
-              Update
-            </button>
+            <button type="submit">Update</button>
           </>
         ) : (
           <>

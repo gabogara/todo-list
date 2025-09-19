@@ -1,5 +1,19 @@
 import { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { DEBOUNCE_TIME_MS } from '../constants';
+
+const StyledForm = styled.form`
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+`;
+
+const StyledGroup = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+`;
 
 const TodosViewForm = ({
   sortField,
@@ -13,16 +27,19 @@ const TodosViewForm = ({
   const [localQueryString, setLocalQueryString] = useState(queryString);
 
   useEffect(() => {
-    const debounce = setTimeout(() => {
+    setLocalQueryString(queryString);
+  }, [queryString]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
       setQueryString(localQueryString);
     }, DEBOUNCE_TIME_MS);
-
-    return () => clearTimeout(debounce);
+    return () => clearTimeout(timer);
   }, [localQueryString, setQueryString]);
 
   return (
-    <form onSubmit={preventRefresh}>
-      <div>
+    <StyledForm onSubmit={preventRefresh}>
+      <StyledGroup>
         <label htmlFor="search">Search todos:</label>
         <input
           type="text"
@@ -30,13 +47,12 @@ const TodosViewForm = ({
           value={localQueryString}
           onChange={(e) => setLocalQueryString(e.target.value)}
         />
-
         <button type="button" onClick={() => setLocalQueryString('')}>
           Clear
         </button>
-      </div>
+      </StyledGroup>
 
-      <div>
+      <StyledGroup>
         <label htmlFor="sortField">Sort by:</label>
         <select
           id="sortField"
@@ -56,8 +72,8 @@ const TodosViewForm = ({
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
         </select>
-      </div>
-    </form>
+      </StyledGroup>
+    </StyledForm>
   );
 };
 

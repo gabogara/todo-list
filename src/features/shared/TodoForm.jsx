@@ -1,37 +1,49 @@
 import { useState, useRef } from 'react';
+import styled from 'styled-components';
 import TextInputWithLabel from './TextInputWithLabel';
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+`;
+
+const StyledButton = styled.button`
+  &:disabled {
+    font-style: italic;
+  }
+`;
 
 const TodoForm = ({ onAddTodo, isSaving }) => {
   const [title, setTitle] = useState('');
   const todoTitleInput = useRef(null);
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
+  const handleTitleChange = (e) => setTitle(e.target.value);
 
-  const handleAddTodo = (event) => {
-    event.preventDefault();
+  const handleAddTodo = (e) => {
+    e.preventDefault();
     if (title.trim() === '') return;
 
     onAddTodo(title);
     setTitle('');
-    todoTitleInput.current.focus();
+    todoTitleInput.current?.focus();
   };
 
   return (
-    <form onSubmit={handleAddTodo}>
-      <label htmlFor="todoTitle">Todo</label>
+    <StyledForm onSubmit={handleAddTodo}>
       <TextInputWithLabel
         elementId="todoTitle"
         label="Todo"
         onChange={handleTitleChange}
-        ref={todoTitleInput}
+        inputRef={todoTitleInput}
         value={title}
       />
-      <button type="submit" disabled={title.trim() === '' || isSaving}>
+      <StyledButton type="submit" disabled={title.trim() === '' || isSaving}>
         {isSaving ? 'Saving...' : 'Add Todo'}
-      </button>
-    </form>
+      </StyledButton>
+    </StyledForm>
   );
 };
 
