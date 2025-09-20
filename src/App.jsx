@@ -10,7 +10,7 @@ import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
-} from './reducers/todos.reducer';
+} from './features/reducers/todos.reducer';
 
 function App() {
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
@@ -71,6 +71,7 @@ function App() {
 
   const addTodo = async (title) => {
     const newTodo = { title, isCompleted: false };
+    dispatch({ type: todoActions.startRequest });
 
     const payload = {
       records: [
@@ -98,6 +99,7 @@ function App() {
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
       const { records } = await resp.json();
+      dispatch({ type: todoActions.addTodo, records });
 
       const savedTodo = {
         id: records[0].id,
@@ -107,8 +109,10 @@ function App() {
 
       setTodoList((prev) => [...prev, savedTodo]);
     } catch (error) {
+      dispatch({ type: todoActions.setLoadError, error });
       setErrorMessage(error instanceof Error ? error.message : String(error));
     } finally {
+      dispatch({ type: todoActions.endRequest });
       setIsSaving(false);
     }
   };
