@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useReducer } from 'react';
 import './App.css';
 import styles from './App.module.css';
 import TodoForm from './features/shared/TodoForm';
@@ -6,8 +6,14 @@ import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
 import logo from './assets/logo.svg';
 import errorIcon from './assets/error.svg';
+import {
+  reducer as todosReducer,
+  actions as todoActions,
+  initialState as initialTodosState,
+} from './reducers/todos.reducer';
 
 function App() {
+  const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
