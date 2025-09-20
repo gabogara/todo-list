@@ -41,6 +41,7 @@ function App() {
 
   useEffect(() => {
     const fetchTodos = async () => {
+      dispatch({ type: todoActions.fetchTodos });
       setIsLoading(true);
       const options = {
         method: 'GET',
@@ -51,6 +52,7 @@ function App() {
         if (!resp.ok)
           throw new Error('NetworkError when attempting to fetch resource.');
         const { records } = await resp.json();
+        dispatch({ type: todoActions.loadTodos, records });
         const mapped = records.map((record) => ({
           id: record.id,
           title: record.fields?.title ?? '',
@@ -58,6 +60,7 @@ function App() {
         }));
         setTodoList(mapped);
       } catch (error) {
+        dispatch({ type: todoActions.setLoadError, error });
         setErrorMessage(error instanceof Error ? error.message : String(error));
       } finally {
         setIsLoading(false);
