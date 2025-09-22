@@ -217,12 +217,12 @@ function App() {
         <img src={logo} alt="" className={styles.logo} />
         Todo List
       </h1>
-      <TodoForm onAddTodo={addTodo} isSaving={isSaving} />
+      <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
       <TodoList
-        todoList={todoList}
+        todoList={todoState.todoList}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
-        isLoading={isLoading}
+        isLoading={todoState.isLoading}
       />
 
       <hr />
@@ -235,13 +235,13 @@ function App() {
         setQueryString={setQueryString}
       />
 
-      {errorMessage && (
+      {todoState.errorMessage && (
         <div role="alert" className={styles.errorBox}>
           <div className={styles.errorRow}>
             <img src={errorIcon} alt="" className={styles.errorIcon} />
-            <p>{errorMessage}... Reverting todo...</p>
+            <p>{todoState.errorMessage}... Reverting todo...</p>
           </div>
-          <button onClick={() => setErrorMessage('')}>
+          <button onClick={() => dispatch({ type: todoActions.clearError })}>
             Dismiss Error Message
           </button>
         </div>
