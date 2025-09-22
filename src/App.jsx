@@ -11,16 +11,11 @@ import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
-} from './features/reducers/todos.reducer.js';
+} from './reducers/todos.reducer';
 
 function App() {
   // Reducer state (todoList, isLoading, isSaving, errorMessage)
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
-  const [todoList, setTodoList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
   const [sortField, setSortField] = useState('createdTime');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -29,6 +24,7 @@ function App() {
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
+  // URL for listing (GET) with sort/filter
   const encodeUrl = useCallback(() => {
     const u = new URL(url);
     u.searchParams.set('sort[0][field]', sortField);
@@ -42,47 +38,37 @@ function App() {
     return u.toString();
   }, [url, sortField, sortDirection, queryString]);
 
+  // Load todos (pessimistic)
   useEffect(() => {
     const fetchTodos = async () => {
       dispatch({ type: todoActions.fetchTodos });
-      setIsLoading(true);
+
       const options = {
         method: 'GET',
         headers: { Authorization: token },
       };
+
       try {
         const resp = await fetch(encodeUrl(), options);
         if (!resp.ok)
           throw new Error('NetworkError when attempting to fetch resource.');
         const { records } = await resp.json();
         dispatch({ type: todoActions.loadTodos, records });
-        const mapped = records.map((record) => ({
-          id: record.id,
-          title: record.fields?.title ?? '',
-          isCompleted: !!record.fields?.isCompleted,
-        }));
-        setTodoList(mapped);
       } catch (error) {
         dispatch({ type: todoActions.setLoadError, error });
-        setErrorMessage(error instanceof Error ? error.message : String(error));
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchTodos();
   }, [encodeUrl, token]);
 
+  // Add todo (pessimistic)
   const addTodo = async (title) => {
-    const newTodo = { title, isCompleted: false };
     dispatch({ type: todoActions.startRequest });
 
     const payload = {
       records: [
         {
-          fields: {
-            title: newTodo.title,
-            isCompleted: newTodo.isCompleted,
-          },
+          fields: { title, isCompleted: false },
         },
       ],
     };
@@ -97,54 +83,36 @@ function App() {
     };
 
     try {
-      setIsSaving(true);
       const resp = await fetch(url, options);
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
       const { records } = await resp.json();
       dispatch({ type: todoActions.addTodo, records });
-
-      const savedTodo = {
-        id: records[0].id,
-        title: records[0].fields?.title ?? '',
-        isCompleted: !!records[0].fields?.isCompleted,
-      };
-
-      setTodoList((prev) => [...prev, savedTodo]);
     } catch (error) {
       dispatch({ type: todoActions.setLoadError, error });
-      setErrorMessage(error instanceof Error ? error.message : String(error));
     } finally {
       dispatch({ type: todoActions.endRequest });
-      setIsSaving(false);
     }
   };
 
+  // Update todo (optimistic)
   const updateTodo = async (id, newTitle) => {
-    const editedTodo = todoList.find((t) => t.id === id);
-    if (!editedTodo) return;
+    const existing = todoState.todoList.find((t) => t.id === id);
+    if (!existing) return;
 
-    const originalTodo = { ...editedTodo };
-    const optimistic = {
+    const originalTodo = { ...existing };
+    const editedTodo = {
       id,
       title: newTitle,
-      isCompleted: editedTodo.isCompleted,
+      isCompleted: existing.isCompleted,
     };
-    dispatch({ type: todoActions.updateTodo, editedTodo: optimistic });
 
-    setTodoList((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, title: newTitle } : t))
-    );
+    // optimistic update
+    dispatch({ type: todoActions.updateTodo, editedTodo });
 
     const payload = {
       records: [
-        {
-          id,
-          fields: {
-            title: newTitle,
-            isCompleted: editedTodo.isCompleted,
-          },
-        },
+        { id, fields: { title: newTitle, isCompleted: existing.isCompleted } },
       ],
     };
 
@@ -161,34 +129,25 @@ function App() {
       const resp = await fetch(url, options);
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
+      // no further state change on success (optimistic)
     } catch (error) {
+      // revert on failure
       dispatch({ type: todoActions.revertTodo, originalTodo, error });
-      setErrorMessage(error instanceof Error ? error.message : String(error));
-      setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
   };
 
+  // Complete todo (optimistic)
   const completeTodo = async (id) => {
-    const target = todoList.find((t) => t.id === id);
+    const target = todoState.todoList.find((t) => t.id === id);
     if (!target) return;
 
     const originalTodo = { ...target };
+
+    // optimistic mark complete
     dispatch({ type: todoActions.completeTodo, id });
 
-    setTodoList((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, isCompleted: true } : t))
-    );
-
     const payload = {
-      records: [
-        {
-          id,
-          fields: {
-            title: target.title,
-            isCompleted: true,
-          },
-        },
-      ],
+      records: [{ id, fields: { title: target.title, isCompleted: true } }],
     };
 
     const options = {
@@ -205,9 +164,8 @@ function App() {
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
     } catch (error) {
+      // revert to original todo if API fails
       dispatch({ type: todoActions.revertTodo, originalTodo, error });
-      setErrorMessage(error instanceof Error ? error.message : String(error));
-      setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
   };
 
@@ -217,7 +175,9 @@ function App() {
         <img src={logo} alt="" className={styles.logo} />
         Todo List
       </h1>
+
       <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
+
       <TodoList
         todoList={todoState.todoList}
         onCompleteTodo={completeTodo}
