@@ -6,14 +6,17 @@ import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
 import logo from './assets/logo.svg';
 import errorIcon from './assets/error.svg';
+
 import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
-} from './features/reducers/todos.reducer';
+} from './features/reducers/todos.reducer.js';
 
 function App() {
+  // Reducer state (todoList, isLoading, isSaving, errorMessage)
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
+
   const [todoList, setTodoList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -122,6 +125,12 @@ function App() {
     if (!editedTodo) return;
 
     const originalTodo = { ...editedTodo };
+    const optimistic = {
+      id,
+      title: newTitle,
+      isCompleted: editedTodo.isCompleted,
+    };
+    dispatch({ type: todoActions.updateTodo, editedTodo: optimistic });
 
     setTodoList((prev) =>
       prev.map((t) => (t.id === id ? { ...t, title: newTitle } : t))
@@ -153,6 +162,7 @@ function App() {
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
     } catch (error) {
+      dispatch({ type: todoActions.revertTodo, originalTodo, error });
       setErrorMessage(error instanceof Error ? error.message : String(error));
       setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
@@ -163,6 +173,7 @@ function App() {
     if (!target) return;
 
     const originalTodo = { ...target };
+    dispatch({ type: todoActions.completeTodo, id });
 
     setTodoList((prev) =>
       prev.map((t) => (t.id === id ? { ...t, isCompleted: true } : t))
@@ -194,6 +205,7 @@ function App() {
       if (!resp.ok)
         throw new Error('NetworkError when attempting to fetch resource.');
     } catch (error) {
+      dispatch({ type: todoActions.revertTodo, originalTodo, error });
       setErrorMessage(error instanceof Error ? error.message : String(error));
       setTodoList((prev) => prev.map((t) => (t.id === id ? originalTodo : t)));
     }
