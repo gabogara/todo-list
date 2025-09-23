@@ -11,15 +11,11 @@ import {
   reducer as todosReducer,
   actions as todoActions,
   initialState as initialTodosState,
-} from './reducers/todos.reducer';
+} from './features/reducers/todos.reducer.js';
 
 function App() {
   // Reducer state (todoList, isLoading, isSaving, errorMessage)
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
-
-  const [sortField, setSortField] = useState('createdTime');
-  const [sortDirection, setSortDirection] = useState('desc');
-  const [queryString, setQueryString] = useState('');
 
   const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
   const token = `Bearer ${import.meta.env.VITE_PAT}`;
@@ -27,16 +23,21 @@ function App() {
   // URL for listing (GET) with sort/filter
   const encodeUrl = useCallback(() => {
     const u = new URL(url);
-    u.searchParams.set('sort[0][field]', sortField);
-    u.searchParams.set('sort[0][direction]', sortDirection);
+    u.searchParams.set('sort[0][field]', todoState.sortField);
+    u.searchParams.set('sort[0][direction]', todoState.sortDirection);
 
-    if (queryString.trim()) {
-      const safe = queryString.replaceAll('"', '\\"');
+    if (todoState.queryString.trim()) {
+      const safe = todoState.queryString.replaceAll('"', '\\"');
       const formula = `SEARCH("${safe}", {title})`;
       u.searchParams.set('filterByFormula', formula);
     }
     return u.toString();
-  }, [url, sortField, sortDirection, queryString]);
+  }, [
+    url,
+    todoState.sortField,
+    todoState.sortDirection,
+    todoState.queryString,
+  ]);
 
   // Load todos (pessimistic)
   useEffect(() => {
@@ -187,12 +188,18 @@ function App() {
 
       <hr />
       <TodosViewForm
-        sortField={sortField}
-        setSortField={setSortField}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        queryString={queryString}
-        setQueryString={setQueryString}
+        sortField={todoState.sortField}
+        setSortField={(v) =>
+          dispatch({ type: todoActions.setSortField, value: v })
+        }
+        sortDirection={todoState.sortDirection}
+        setSortDirection={(v) =>
+          dispatch({ type: todoActions.setSortDirection, value: v })
+        }
+        queryString={todoState.queryString}
+        setQueryString={(v) =>
+          dispatch({ type: todoActions.setQueryString, value: v })
+        }
       />
 
       {todoState.errorMessage && (

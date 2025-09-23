@@ -3,6 +3,9 @@ export const initialState = {
   isLoading: false,
   isSaving: false,
   errorMessage: '',
+  sortDirection: 'desc',
+  sortField: 'createdTime',
+  queryString: '',
 };
 
 export const actions = {
@@ -23,6 +26,9 @@ export const actions = {
 
   // dismiss error
   clearError: 'clearError',
+  setSortField: 'setSortField',
+  setSortDirection: 'setSortDirection',
+  setQueryString: 'setQueryString',
 };
 
 export function reducer(state = initialState, action) {
@@ -108,6 +114,13 @@ export function reducer(state = initialState, action) {
 
     case actions.clearError:
       return { ...state, errorMessage: '' };
+
+    case actions.setSortField:
+      return { ...state, sortField: action.value };
+    case actions.setSortDirection:
+      return { ...state, sortDirection: action.value };
+    case actions.setQueryString:
+      return { ...state, queryString: action.value };
 
     default:
       return state;
