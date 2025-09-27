@@ -6,6 +6,9 @@ import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
 import logo from './assets/logo.svg';
 import errorIcon from './assets/error.svg';
+import Header from './features/shared/Header.jsx';
+import TodosPage from './pages/TodosPage.jsx';
+import { useLocation } from 'react-router-dom';
 
 import {
   reducer as todosReducer,
@@ -14,6 +17,9 @@ import {
 } from './features/reducers/todos.reducer.js';
 
 function App() {
+  const location = useLocation();
+  const [title, setTitle] = useState('Todo List');
+
   // Reducer state (todoList, isLoading, isSaving, errorMessage)
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
 
