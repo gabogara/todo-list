@@ -1,15 +1,17 @@
 .header {
   position: relative;
+  padding-top: 2.5rem;
 }
 
 .title {
   text-align: center;
   margin: 0 0 1rem;
+  line-height: 1.2;
 }
 
 .nav {
   position: absolute;
-  top: 1rem;
+  top: 0.5rem;
   right: 1rem;
   display: flex;
   gap: 1rem;
