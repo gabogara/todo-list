@@ -4,7 +4,6 @@ import styles from './App.module.css';
 import TodoForm from './features/shared/TodoForm';
 import TodoList from './features/TodoList/TodoList';
 import TodosViewForm from './features/TodosViewForm';
-import logo from './assets/logo.svg';
 import errorIcon from './assets/error.svg';
 import Header from './features/shared/Header.jsx';
 import TodosPage from './pages/TodosPage.jsx';
@@ -178,10 +177,7 @@ function App() {
 
   return (
     <div className={styles.app}>
-      <h1 className={styles.title}>
-        <img src={logo} alt="" className={styles.logo} />
-        Todo List
-      </h1>
+      <Header title={title} />
 
       <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
 
