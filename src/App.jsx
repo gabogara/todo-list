@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback, useReducer } from 'react';
 import './App.css';
 import styles from './App.module.css';
-import TodoForm from './features/shared/TodoForm';
-import TodoList from './features/TodoList/TodoList';
-import TodosViewForm from './features/TodosViewForm';
 import errorIcon from './assets/error.svg';
 import Header from './features/shared/Header.jsx';
 import TodosPage from './pages/TodosPage.jsx';
@@ -185,27 +182,23 @@ function App() {
     <div className={styles.app}>
       <Header title={title} />
 
-      <TodoForm onAddTodo={addTodo} isSaving={todoState.isSaving} />
-
-      <TodoList
+      <TodosPage
         todoList={todoState.todoList}
+        isLoading={todoState.isLoading}
+        isSaving={todoState.isSaving}
+        sortField={todoState.sortField}
+        sortDirection={todoState.sortDirection}
+        queryString={todoState.queryString}
+        onAddTodo={addTodo}
         onCompleteTodo={completeTodo}
         onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-
-      <hr />
-      <TodosViewForm
-        sortField={todoState.sortField}
-        setSortField={(v) =>
+        onSetSortField={(v) =>
           dispatch({ type: todoActions.setSortField, value: v })
         }
-        sortDirection={todoState.sortDirection}
-        setSortDirection={(v) =>
+        onSetSortDirection={(v) =>
           dispatch({ type: todoActions.setSortDirection, value: v })
         }
-        queryString={todoState.queryString}
-        setQueryString={(v) =>
+        onSetQueryString={(v) =>
           dispatch({ type: todoActions.setQueryString, value: v })
         }
       />
