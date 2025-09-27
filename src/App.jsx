@@ -67,6 +67,12 @@ function App() {
     fetchTodos();
   }, [encodeUrl, token]);
 
+  useEffect(() => {
+    if (location.pathname === '/') setTitle('Todo List');
+    else if (location.pathname === '/about') setTitle('About');
+    else setTitle('Not Found');
+  }, [location]);
+
   // Add todo (pessimistic)
   const addTodo = async (title) => {
     dispatch({ type: todoActions.startRequest });
