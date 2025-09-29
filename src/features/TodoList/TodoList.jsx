@@ -1,5 +1,5 @@
-import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import TodoListItem from './TodoListItem';
 import styles from './TodoList.module.css';
 
@@ -7,6 +7,7 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
   if (isLoading) return <p>Todo list loading...</p>;
 
   const filteredTodoList = todoList.filter((todo) => !todo.isCompleted);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -19,6 +20,16 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
     indexOfFirstTodo,
     indexOfFirstTodo + itemsPerPage
   );
+
+  const handlePreviousPage = () => {
+    const prev = Math.max(1, currentPage - 1);
+    setSearchParams({ page: String(prev) });
+  };
+
+  const handleNextPage = () => {
+    const next = Math.min(totalPages, currentPage + 1);
+    setSearchParams({ page: String(next) });
+  };
 
   return (
     <>
