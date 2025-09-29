@@ -14,13 +14,19 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const indexOfFirstTodo = (currentPage - 1) * itemsPerPage;
   const totalPages = Math.ceil(filteredTodoList.length / itemsPerPage);
+
+  const currentTodos = filteredTodoList.slice(
+    indexOfFirstTodo,
+    indexOfFirstTodo + itemsPerPage
+  );
+
   return (
     <>
       {filteredTodoList.length === 0 ? (
         <p>Add todo above to get started</p>
       ) : (
         <ul className={styles.list}>
-          {filteredTodoList.map((todo) => (
+          {currentTodos.map((todo) => (
             <TodoListItem
               key={todo.id}
               todo={todo}
