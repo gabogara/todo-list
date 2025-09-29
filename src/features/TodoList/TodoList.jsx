@@ -31,6 +31,18 @@ function TodoList({ todoList, onCompleteTodo, onUpdateTodo, isLoading }) {
     setSearchParams({ page: String(next) });
   };
 
+  useEffect(() => {
+    if (totalPages > 0) {
+      const invalid =
+        Number.isNaN(currentPage) ||
+        !Number.isFinite(currentPage) ||
+        currentPage < 1 ||
+        currentPage > totalPages;
+
+      if (invalid) navigate('/');
+    }
+  }, [currentPage, totalPages, navigate]);
+
   return (
     <>
       {filteredTodoList.length === 0 ? (
