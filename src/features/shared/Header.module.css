@@ -1,12 +1,21 @@
 .header {
-  position: relative;
-  padding-top: 2.5rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  line-height: 1.2;
 }
 
 .title {
   text-align: center;
   margin: 0 0 1rem;
   line-height: 1.2;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .nav {
